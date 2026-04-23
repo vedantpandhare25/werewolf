@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lycanthrope — Werewolf Moderator</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #080808;
+    --deep: #0e0e0e;
+    --surface: #141414;
+    --surface2: #1a1a1a;
+    --border: #2a2a2a;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dim: #7a6030;
+    --red: #c0392b;
+    --red-light: #e74c3c;
+    --red-dim: #7a1f1f;
+    --purple: #7d3c98;
+    --purple-light: #9b59b6;
+    --teal: #1a8a7a;
+    --teal-light: #1abc9c;
+    --orange: #d35400;
+    --orange-light: #e67e22;
+    --text: #e8d5a3;
+    --text-dim: #8a7a5a;
+    --text-muted: #4a4030;
+    --green: #27ae60;
+    --green-light: #2ecc71;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'EB Garamond', serif;
+    font-size: 16px;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 10%, rgba(201,168,76,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 80% 90%, rgba(192,57,43,0.04) 0%, transparent 60%),
+      repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(201,168,76,0.015) 80px, rgba(201,168,76,0.015) 81px),
+      repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(201,168,76,0.015) 80px, rgba(201,168,76,0.015) 81px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .screen {
+    display: none;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+    animation: fadeIn 0.5s ease;
+  }
+  .screen.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    text-align: center;
+    padding: 48px 24px 32px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .page-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 50%;
+    transform: translateX(-50%);
+    width: 120px; height: 1px;
+    background: var(--gold);
+    box-shadow: 0 0 12px var(--gold);
+  }
+
+  .logo-mark {
+    font-size: 36px;
+    margin-bottom: 8px;
+    display: block;
+    filter: drop-shadow(0 0 16px rgba(201,168,76,0.5));
+  }
+
+  h1.brand {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    color: var(--gold);
+    letter-spacing: 0.08em;
+    text-shadow: 0 0 30px rgba(201,168,76,0.3);
+    line-height: 1.2;
+  }
+
+  h2.screen-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1rem, 3vw, 1.4rem);
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 20px rgba(201,168,76,0.3);
+  }
+
+  .subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ── CONTAINER ── */
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+  }
+
+  /* ── GOLD DIVIDER ── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold-dim));
+  }
+  .divider::after {
+    background: linear-gradient(to left, transparent, var(--gold-dim));
+  }
+  .divider span {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    color: var(--gold-dim);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  /* ── INPUT ROW ── */
+  .input-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .input-row input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'EB Garamond', serif;
+    font-size: 1rem;
+    padding: 12px 16px;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .input-row input:focus {
+    border-color: var(--gold-dim);
+    box-shadow: 0 0 0 2px rgba(201,168,76,0.1);
+  }
+  .input-row input::placeholder { color: var(--text-muted); }
+
+  /* ── BUTTONS ── */
+  .btn {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 12px 20px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0);
+    transition: background 0.15s;
+  }
+  .btn:hover::after { background: rgba(255,255,255,0.05); }
+  .btn:active { transform: scale(0.97); }
+
+  .btn-gold {
+    background: linear-gradient(135deg, #b8922a, #c9a84c, #a07820);
+    color: #0a0800;
+    box-shadow: 0 2px 12px rgba(201,168,76,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+  .btn-gold:hover {
+    box-shadow: 0 4px 20px rgba(201,168,76,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .btn-ghost:hover { border-color: var(--gold-dim); color: var(--gold); }
+
+  .btn-full {
+    width: 100%;
+    padding: 16px;
+    font-size: 0.85rem;
+  }
+
+  .btn-danger {
+    background: transparent;
+    border: 1px solid var(--red-dim);
+    color: var(--red);
+    padding: 6px 10px;
+    font-size: 0.6rem;
+  }
+  .btn-danger:hover { background: rgba(192,57,43,0.1); }
+
+  .btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+
+  /* ── PLAYER LIST (Screen 1) ── */
+  .player-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .player-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .player-item::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--gold-dim);
+    transform: scaleY(0);
+    transition: transform 0.2s;
+  }
+  .player-item.selected {
+    background: var(--surface2);
+    border-color: var(--gold-dim);
+  }
+  .player-item.selected::before { transform: scaleY(1); }
+
+  .player-item-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    flex: 1;
+  }
+  .player-item.selected .player-item-name { color: var(--gold-light); }
+
+  .player-item-actions { display: flex; align-items: center; gap: 10px; }
+
+  .tick {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .player-item.selected .tick {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #000;
+  }
+
+  /* ── COUNTER ── */
+  .counter-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 20px;
+    margin-bottom: 20px;
+  }
+  .counter-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+  .counter-val {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.4rem;
+    color: var(--gold);
+  }
+
+  /* ── ROLE REVEAL (Screen 2) ── */
+  .reveal-card {
+    background: var(--surface);
+    border: 1px solid var(--gold-dim);
+    border-radius: 12px;
+    padding: 40px 24px;
+    text-align: center;
+    margin: 24px 0;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(201,168,76,0.08), inset 0 1px 0 rgba(201,168,76,0.1);
+    cursor: pointer;
+    transition: all 0.3s;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .reveal-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .reveal-player-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.2rem, 3.5vw, 1.6rem);
+    color: var(--gold);
+    margin-bottom: 6px;
+    text-shadow: 0 0 20px rgba(201,168,76,0.4);
+  }
+  .reveal-instruction {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    font-style: italic;
+    margin-bottom: 24px;
+  }
+  .reveal-role-hidden {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    border: 2px dashed var(--gold-dim);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+    color: var(--text-muted);
+    transition: all 0.3s;
+  }
+  .reveal-role-visible {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes popIn {
+    from { transform: scale(0.6); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .role-emoji-big { font-size: 52px; filter: drop-shadow(0 0 12px currentColor); }
+  .role-name-big {
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+  }
+  .role-werewolf { color: var(--red-light); }
+  .role-seer { color: var(--purple-light); }
+  .role-doctor { color: var(--teal-light); }
+  .role-hunter { color: var(--orange-light); }
+  .role-villager { color: var(--gold-light); }
+
+  /* Progress dots */
+  .progress-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: all 0.3s;
+  }
+  .dot.done { background: var(--gold-dim); }
+  .dot.current {
+    background: var(--gold);
+    box-shadow: 0 0 8px var(--gold);
+    transform: scale(1.3);
+  }
+
+  /* ── DASHBOARD (Screen 3) ── */
+  .dash-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 20px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .dash-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .round-badge {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    text-shadow: 0 0 16px rgba(201,168,76,0.4);
+  }
+  .dash-stats {
+    display: flex;
+    gap: 16px;
+  }
+  .stat-pill {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+  .stat-living { border-color: var(--green); color: var(--green-light); }
+  .stat-wolves { border-color: var(--red); color: var(--red-light); }
+
+  .phase-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .player-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    padding: 20px;
+  }
+
+  .player-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    transition: all 0.2s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .player-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    opacity: 0.7;
+  }
+  .player-card.role-werewolf-card::before { background: var(--red-light); }
+  .player-card.role-seer-card::before { background: var(--purple-light); }
+  .player-card.role-doctor-card::before { background: var(--teal-light); }
+  .player-card.role-hunter-card::before { background: var(--orange-light); }
+  .player-card.role-villager-card::before { background: var(--gold); }
+
+  .player-card:hover:not(.dead):not(.no-target) {
+    border-color: var(--gold-dim);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+  .player-card.targeted {
+    border-color: var(--red);
+    box-shadow: 0 0 16px rgba(192,57,43,0.3);
+    animation: pulse-red 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse-red {
+    0%, 100% { box-shadow: 0 0 16px rgba(192,57,43,0.3); }
+    50% { box-shadow: 0 0 28px rgba(192,57,43,0.5); }
+  }
+  .player-card.healed {
+    border-color: var(--teal);
+    box-shadow: 0 0 16px rgba(26,138,122,0.3);
+  }
+  .player-card.dead {
+    opacity: 0.35;
+    filter: grayscale(1);
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .card-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    margin-bottom: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .card-role-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .card-emoji { font-size: 20px; }
+  .card-role-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .card-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.1em;
+    padding: 3px 8px;
+    border-radius: 3px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid;
+  }
+  .status-alive { border-color: var(--green); color: var(--green-light); }
+  .status-killed { border-color: var(--red); color: var(--red-light); }
+  .status-healed { border-color: var(--teal); color: var(--teal-light); }
+  .status-dead { border-color: #333; color: #555; }
+
+  .confirm-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 16px 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 20;
+  }
+
+  /* ── LOG (Screen 4) ── */
+  .log-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+  }
+  .log-entry {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold-dim);
+    border-radius: 4px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .log-entry.log-kill { border-left-color: var(--red); }
+  .log-entry.log-heal { border-left-color: var(--teal); }
+  .log-round {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.65rem;
+    color: var(--gold-dim);
+    white-space: nowrap;
+    padding-top: 2px;
+  }
+  .log-text { font-size: 0.95rem; color: var(--text); }
+  .log-icon { font-size: 18px; flex-shrink: 0; }
+
+  /* ── WIN MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal-box {
+    background: var(--surface);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    padding: 40px 32px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 0 60px rgba(201,168,76,0.2), 0 0 120px rgba(201,168,76,0.08);
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .modal-icon { font-size: 60px; margin-bottom: 16px; display: block; }
+  .modal-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.5rem;
+    color: var(--gold);
+    margin-bottom: 8px;
+    text-shadow: 0 0 20px rgba(201,168,76,0.5);
+  }
+  .modal-subtitle { font-size: 1rem; color: var(--text-dim); margin-bottom: 28px; font-style: italic; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--black); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .back-btn {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    display: flex; align-items: center; gap: 4px;
+    padding: 4px;
+  }
+  .back-btn:hover { color: var(--gold); }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .night-instruction {
+    background: rgba(192,57,43,0.06);
+    border: 1px solid rgba(192,57,43,0.2);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin: 0 20px 4px;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  .s4-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 20px 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- SCREEN 1: Player Manager -->
+<div class="screen active" id="screen1">
+  <div class="page-header">
+    <span class="logo-mark">🐺</span>
+    <h1 class="brand">Lycanthrope</h1>
+    <p class="subtitle">Ultimate Werewolf Moderator</p>
+  </div>
+  <div class="container">
+    <div class="divider"><span>The Village Registry</span></div>
+
+    <div class="input-row">
+      <input type="text" id="nameInput" placeholder="Enter player name..." maxlength="24" autocomplete="off">
+      <button class="btn btn-gold" onclick="addPlayer()">Add</button>
+    </div>
+
+    <div class="counter-bar">
+      <span class="counter-label">Selected for this session</span>
+      <span class="counter-val" id="selectedCount">0</span>
+    </div>
+
+    <span class="section-label">All Players — tap to select</span>
+    <div class="player-list" id="playerList"></div>
+
+    <div style="height:20px;"></div>
+    <button class="btn btn-gold btn-full" id="proceedBtn" onclick="goToScreen2()" disabled>
+      ⚔ Begin Session
+    </button>
+  </div>
+</div>
+
+<!-- SCREEN 2: Role Assignment -->
+<div class="screen" id="screen2">
+  <div class="page-header" style="position:relative;">
+    <button class="back-btn" onclick="showScreen(1)">← Back</button>
+    <h2 class="screen-title">Role Assignment</h2>
+    <p class="subtitle">Pass the device in secret</p>
+  </div>
+  <div class="container">
+    <div class="progress-dots" id="progressDots"></div>
+    <div id="revealArea"></div>
+    <div id="nextBtnArea" style="display:none;">
+      <button class="btn btn-gold btn-full" id="nextPlayerBtn" onclick="nextReveal()">Next Player →</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 3: Dashboard -->
+<div class="screen" id="screen3">
+  <div class="dash-header">
+    <div class="dash-top-row">
+      <div class="round-badge" id="roundBadge">Night 1</div>
+      <div class="dash-stats">
+        <div class="stat-pill stat-living">🟢 <span id="livingCount">0</span> Living</div>
+        <div class="stat-pill stat-wolves">🔴 <span id="wolfCount">0</span> Wolves</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+      <span class="phase-label">Night Phase — tap players to act</span>
+      <button class="btn btn-ghost" style="font-size:0.6rem;padding:6px 12px;" onclick="showScreen(4)">📜 Log</button>
+    </div>
+  </div>
+
+  <div class="night-instruction" id="nightInstruction">
+    Tap an <strong style="color:var(--red-light)">Alive</strong> player to mark as <strong style="color:var(--red-light)">Killed</strong> tonight. Tap again to undo. Tap a <strong style="color:var(--red-light)">Killed</strong> player to mark as <strong style="color:var(--teal-light)">Healed</strong> (Doctor saved them).
+  </div>
+
+  <div class="player-grid" id="playerGrid"></div>
+
+  <div class="confirm-bar">
+    <button class="btn btn-gold" style="flex:1;" onclick="confirmNight()">✦ Confirm Night & Advance</button>
+    <button class="btn btn-ghost" style="padding:12px 16px;" onclick="showScreen(1)" title="New Game">↺</button>
+  </div>
+</div>
+
+<!-- SCREEN 4: Game Log -->
+<div class="screen" id="screen4">
+  <div class="page-header" style="position:relative;">
+    <button class="back-btn" onclick="showScreen(3)">← Dashboard</button>
+    <h2 class="screen-title">Game Log</h2>
+    <p class="subtitle">The chronicle of the village</p>
+  </div>
+  <div id="logList" class="log-list"></div>
+</div>
+
+<!-- Win Modal -->
+<div class="modal-overlay" id="winModal">
+  <div class="modal-box">
+    <span class="modal-icon" id="winIcon">🎉</span>
+    <div class="modal-title" id="winTitle">Victory!</div>
+    <div class="modal-subtitle" id="winSubtitle"></div>
+    <button class="btn btn-gold btn-full" onclick="closeModal()">Return to Dashboard</button>
+  </div>
+</div>
+
+<script>
+  /* ── STATE ── */
+  var masterPlayers = [];
+  var selectedPlayers = [];
+  var assignedRoles = [];
+  var gameLog = [];
+  var currentRound = 1;
+  var revealIndex = 0;
+  var isRevealed = false;
+
+  /* ── ROLE CONFIG ── */
+  var ROLES = {
+    Werewolf: { emoji: '🐺', color: 'role-werewolf', css: 'role-werewolf-card' },
+    Seer:     { emoji: '🔮', color: 'role-seer',      css: 'role-seer-card' },
+    Doctor:   { emoji: '💉', color: 'role-doctor',    css: 'role-doctor-card' },
+    Hunter:   { emoji: '🏹', color: 'role-hunter',    css: 'role-hunter-card' },
+    Villager: { emoji: '🏘️', color: 'role-villager',  css: 'role-villager-card' }
+  };
+
+  function getRoleSet(n) {
+    var roles = [];
+    if (n <= 5) {
+      roles.push('Werewolf', 'Seer', 'Doctor');
+      for (var i = 3; i < n; i++) roles.push('Villager');
+    } else if (n <= 9) {
+      roles.push('Werewolf', 'Werewolf', 'Seer', 'Doctor', 'Hunter');
+      for (var i = 5; i < n; i++) roles.push('Villager');
+    } else {
+      var wolves = n <= 12 ? 3 : 4;
+      for (var i = 0; i < wolves; i++) roles.push('Werewolf');
+      roles.push('Seer', 'Doctor', 'Hunter');
+      for (var i = wolves + 3; i < n; i++) roles.push('Villager');
+    }
+    return shuffle(roles);
+  }
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  /* ── PERSISTENCE ── */
+  function save() {
+    try { localStorage.setItem('lycan_players', JSON.stringify(masterPlayers)); } catch(e) {}
+  }
+  function load() {
+    try {
+      var d = localStorage.getItem('lycan_players');
+      if (d) masterPlayers = JSON.parse(d);
+    } catch(e) { masterPlayers = []; }
+  }
+
+  /* ── SCREEN 1 ── */
+  function renderPlayerList() {
+    var list = document.getElementById('playerList');
+    if (masterPlayers.length === 0) {
+      list.innerHTML = '<div class="empty-state">No players added yet.<br>Add your regular group above.</div>';
+      return;
+    }
+    list.innerHTML = masterPlayers.map(function(p, i) {
+      var sel = selectedPlayers.indexOf(p) !== -1;
+      return '<div class="player-item' + (sel ? ' selected' : '') + '" onclick="toggleSelect(' + i + ')">' +
+        '<span class="player-item-name">' + escHtml(p) + '</span>' +
+        '<div class="player-item-actions">' +
+          '<div class="tick">' + (sel ? '✓' : '') + '</div>' +
+          '<button class="btn btn-danger" onclick="removePlayer(event,' + i + ')">✕</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    var cnt = selectedPlayers.length;
+    document.getElementById('selectedCount').textContent = cnt;
+    document.getElementById('proceedBtn').disabled = cnt < 3;
+  }
+
+  function addPlayer() {
+    var inp = document.getElementById('nameInput');
+    var name = inp.value.trim();
+    if (!name) return;
+    if (masterPlayers.indexOf(name) !== -1) { inp.value = ''; return; }
+    masterPlayers.push(name);
+    save();
+    inp.value = '';
+    renderPlayerList();
+  }
+
+  function removePlayer(e, i) {
+    e.stopPropagation();
+    var name = masterPlayers[i];
+    masterPlayers.splice(i, 1);
+    var si = selectedPlayers.indexOf(name);
+    if (si !== -1) selectedPlayers.splice(si, 1);
+    save();
+    renderPlayerList();
+  }
+
+  function toggleSelect(i) {
+    var name = masterPlayers[i];
+    var si = selectedPlayers.indexOf(name);
+    if (si !== -1) selectedPlayers.splice(si, 1);
+    else selectedPlayers.push(name);
+    renderPlayerList();
+  }
+
+  document.getElementById('nameInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') addPlayer();
+  });
+
+  /* ── SCREEN 2 ── */
+  function goToScreen2() {
+    if (selectedPlayers.length < 3) return;
+    var roles = getRoleSet(selectedPlayers.length);
+    assignedRoles = selectedPlayers.map(function(name, i) {
+      return { name: name, role: roles[i], status: 'alive' };
+    });
+    revealIndex = 0;
+    isRevealed = false;
+    renderDots();
+    renderReveal();
+    showScreen(2);
+  }
+
+  function renderDots() {
+    var dots = document.getElementById('progressDots');
+    dots.innerHTML = assignedRoles.map(function(_, i) {
+      var cls = i < revealIndex ? 'done' : (i === revealIndex ? 'current' : '');
+      return '<div class="dot ' + cls + '"></div>';
+    }).join('');
+  }
+
+  function renderReveal() {
+    var p = assignedRoles[revealIndex];
+    var area = document.getElementById('revealArea');
+    var nextArea = document.getElementById('nextBtnArea');
+    nextArea.style.display = 'none';
+    isRevealed = false;
+
+    area.innerHTML =
+      '<div class="reveal-card" onclick="toggleReveal()" id="revealCard">' +
+        '<div class="reveal-player-name">' + escHtml(p.name) + '</div>' +
+        '<div class="reveal-instruction">Tap to reveal your role</div>' +
+        '<div class="reveal-role-hidden">👁</div>' +
+      '</div>';
+  }
+
+  function toggleReveal() {
+    var p = assignedRoles[revealIndex];
+    var card = document.getElementById('revealCard');
+    var ri = ROLES[p.role];
+    var nextArea = document.getElementById('nextBtnArea');
+
+    if (!isRevealed) {
+      isRevealed = true;
+      card.innerHTML =
+        '<div class="reveal-player-name">' + escHtml(p.name) + '</div>' +
+        '<div class="reveal-instruction" style="opacity:0.5">Tap to hide</div>' +
+        '<div class="reveal-role-visible">' +
+          '<div class="role-emoji-big ' + ri.color + '">' + ri.emoji + '</div>' +
+          '<div class="role-name-big ' + ri.color + '">' + p.role + '</div>' +
+        '</div>';
+      nextArea.style.display = 'block';
+    } else {
+      isRevealed = false;
+      card.innerHTML =
+        '<div class="reveal-player-name">' + escHtml(p.name) + '</div>' +
+        '<div class="reveal-instruction">Tap to reveal your role</div>' +
+        '<div class="reveal-role-hidden">👁</div>';
+      nextArea.style.display = 'none';
+    }
+  }
+
+  function nextReveal() {
+    revealIndex++;
+    if (revealIndex >= assignedRoles.length) {
+      initDashboard();
+      showScreen(3);
+    } else {
+      renderDots();
+      renderReveal();
+    }
+  }
+
+  /* ── SCREEN 3 ── */
+  function initDashboard() {
+    currentRound = 1;
+    gameLog = [];
+    assignedRoles.forEach(function(p) { p.status = 'alive'; p.nightTarget = false; });
+    renderDashboard();
+  }
+
+  function renderDashboard() {
+    document.getElementById('roundBadge').textContent = 'Night ' + currentRound;
+    var living = assignedRoles.filter(function(p) { return p.status !== 'dead'; }).length;
+    var wolves = assignedRoles.filter(function(p) { return p.role === 'Werewolf' && p.status !== 'dead'; }).length;
+    document.getElementById('livingCount').textContent = living;
+    document.getElementById('wolfCount').textContent = wolves;
+
+    var grid = document.getElementById('playerGrid');
+    grid.innerHTML = assignedRoles.map(function(p, i) {
+      var ri = ROLES[p.role];
+      var isDead = p.status === 'dead';
+      var isKilled = p.status === 'killed';
+      var isHealed = p.status === 'healed';
+      var isAlive = p.status === 'alive';
+
+      var statusHtml = '';
+      if (isAlive)  statusHtml = '<span class="card-status status-alive">🟢 Alive</span>';
+      if (isKilled) statusHtml = '<span class="card-status status-killed">🔴 Killed</span>';
+      if (isHealed) statusHtml = '<span class="card-status status-healed">💚 Healed</span>';
+      if (isDead)   statusHtml = '<span class="card-status status-dead">💀 Dead</span>';
+
+      var cardClass = 'player-card ' + ri.css;
+      if (isDead) cardClass += ' dead';
+      else if (isKilled) cardClass += ' targeted';
+      else if (isHealed) cardClass += ' healed';
+
+      var clickable = !isDead;
+      return '<div class="' + cardClass + '"' + (clickable ? ' onclick="cardAction(' + i + ')"' : '') + '>' +
+        '<div class="card-name">' + escHtml(p.name) + '</div>' +
+        '<div class="card-role-row">' +
+          '<span class="card-emoji">' + ri.emoji + '</span>' +
+          '<span class="card-role-name ' + ri.color + '">' + p.role + '</span>' +
+        '</div>' +
+        statusHtml +
+      '</div>';
+    }).join('');
+  }
+
+  function cardAction(i) {
+    var p = assignedRoles[i];
+    if (p.status === 'dead') return;
+
+    if (p.status === 'alive') {
+      p.status = 'killed';
+    } else if (p.status === 'killed') {
+      p.status = 'healed';
+    } else if (p.status === 'healed') {
+      p.status = 'alive';
+    }
+    renderDashboard();
+  }
+
+  function confirmNight() {
+    var killed = [];
+    var healed = [];
+
+    assignedRoles.forEach(function(p) {
+      if (p.status === 'killed') {
+        killed.push(p.name);
+        p.status = 'dead';
+        gameLog.push({ round: currentRound, type: 'kill', text: p.name + ' was slain in the night.' });
+      }
+      if (p.status === 'healed') {
+        healed.push(p.name);
+        gameLog.push({ round: currentRound, type: 'heal', text: p.name + ' was saved by the Doctor.' });
+        p.status = 'alive';
+      }
+    });
+
+    currentRound++;
+    renderDashboard();
+    checkWinCondition();
+  }
+
+  function checkWinCondition() {
+    var living = assignedRoles.filter(function(p) { return p.status !== 'dead'; });
+    var wolves = living.filter(function(p) { return p.role === 'Werewolf'; });
+    var villagers = living.filter(function(p) { return p.role !== 'Werewolf'; });
+
+    if (wolves.length === 0) {
+      showWin('🌅', 'Village Wins!', 'All werewolves have been eliminated. The village is safe.');
+    } else if (wolves.length >= villagers.length) {
+      showWin('🐺', 'Werewolves Win!', 'The wolves now outnumber the villagers. Darkness falls.');
+    }
+  }
+
+  function showWin(icon, title, sub) {
+    document.getElementById('winIcon').textContent = icon;
+    document.getElementById('winTitle').textContent = title;
+    document.getElementById('winSubtitle').textContent = sub;
+    document.getElementById('winModal').classList.add('active');
+  }
+
+  function closeModal() {
+    document.getElementById('winModal').classList.remove('active');
+  }
+
+  /* ── SCREEN 4 ── */
+  function renderLog() {
+    var list = document.getElementById('logList');
+    if (gameLog.length === 0) {
+      list.innerHTML = '<div class="empty-state">No events recorded yet.</div>';
+      return;
+    }
+    list.innerHTML = gameLog.slice().reverse().map(function(entry) {
+      var cls = entry.type === 'kill' ? 'log-kill' : 'log-heal';
+      var icon = entry.type === 'kill' ? '💀' : '💚';
+      return '<div class="log-entry ' + cls + '">' +
+        '<span class="log-icon">' + icon + '</span>' +
+        '<div>' +
+          '<div class="log-round">Night ' + entry.round + '</div>' +
+          '<div class="log-text">' + escHtml(entry.text) + '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  /* ── NAVIGATION ── */
+  function showScreen(n) {
+    document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+    document.getElementById('screen' + n).classList.add('active');
+    if (n === 3) renderDashboard();
+    if (n === 4) renderLog();
+    window.scrollTo(0, 0);
+  }
+
+  /* ── UTILS ── */
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ── INIT ── */
+  load();
+  renderPlayerList();
+</script>
+</body>
+</html>
